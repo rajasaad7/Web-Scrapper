@@ -1,0 +1,1 @@
+Simple web scrapper written for getting malicious Ip reports from different sources.
