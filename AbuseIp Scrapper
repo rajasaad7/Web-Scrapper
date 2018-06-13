@@ -1,0 +1,55 @@
+import requests
+from bs4 import BeautifulSoup
+import pymysql as myth
+
+
+conn = myth.connect(host="localhost" , user = "root" , password = "" , db = "malictious_ip_reports")
+first = conn.cursor()
+casual = "update me"
+maxi = 2
+#ip = input("Enter Ip : ")
+reported = None 
+report1 = "Yess"
+report2 = "No"
+
+#---------------------------- Getting Data From AbuseIP ---------------------
+
+def spider(justincase):
+#    ip = input("Enter Ip : ")
+    url = 'https://www.abuseipdb.com/check/'+str(ip)
+    source_code = requests.get(url)
+    plain_text = source_code.text
+    soup = BeautifulSoup(plain_text, "html5lib")
+    find_text = soup.select('h3#report + p')             
+    global reported
+    reported = str(find_text[0].text)
+    print (find_text[0].text)
+    database(1)
+
+
+#---------------------------- Database Connection ---------------------
+
+def database(justincase):
+    
+    first.execute("""INSERT INTO abuseip(IP, Report) VALUES (%s,%s) """ , (ip , reported))
+    
+    try:
+        # Commit your changes in the database
+        conn.commit()
+
+    except:
+        # Rollback in case there is any error
+        conn.rollback()
+
+
+iplist = input("How many Ip's you want to Enter? ")
+iplisted = int(iplist)
+
+while (iplisted > 0): 
+    ip = input("Enter Ip : ")
+    spider(1)
+    iplisted = iplisted - 1
+    
+conn.close()
+print("\nThankyou For Your Response !!")
+
